@@ -8,4 +8,4 @@ Before starting, ensure you have installed and configured the Databricks CLI wit
 Initialize the asset bundle template:
 ```bash
 databricks bundle [url] --profile [profile]
-```
+``
