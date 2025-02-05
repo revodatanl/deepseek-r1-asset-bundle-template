@@ -1,0 +1,41 @@
+  # The main job for deepseek_r1_deployment
+  resources:
+    jobs:
+      deepseek_r1_deployment_job:
+        name: deepseek_r1_deployment_job
+        email_notifications:
+          on_failure:
+            - ${workspace.current_user.userName}
+          on_duration_warning_threshold_exceeded:
+            - ${workspace.current_user.userName}
+        timeout_seconds: 5400
+        health:
+          rules:
+            - metric: RUN_DURATION_SECONDS
+              op: GREATER_THAN
+              value: 3600
+        tasks:
+          - task_key: log-model-to-mlflow
+            notebook_task:
+              notebook_path: ../src/log_model_to_mlflow.ipynb
+            job_cluster_key: deepseek_r1_deployment_cluster
+          - task_key: deploy-model-to-endpoint
+            notebook_task:
+              notebook_path: ../src/deploy_model_to_endpoint.ipynb
+            job_cluster_key: deepseek_r1_deployment_cluster
+            depends_on:
+              - task_key: log-model-to-mlflow
+        parameters:
+          - name: hugginface_model_id
+            default: {{.hugginface_model_id}}
+        job_clusters:
+          - job_cluster_key: deepseek_r1_deployment_cluster
+            new_cluster:
+              num_workers: 0
+              node_type_id: "Standard_D32s_v3"
+              spark_version: "15.4.x-cpu-ml-scala2.12"
+              spark_conf:
+                spark.databricks.cluster.profile: singleNode
+                spark.master: "local[*, 4]"
+              custom_tags:
+                ResourceClass: SingleNode

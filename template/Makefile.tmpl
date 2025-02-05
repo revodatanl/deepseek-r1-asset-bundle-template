@@ -1,0 +1,13 @@
+MODEL_NAME = $(subst /,-,{{.hugginface_model_id}})
+
+deploy:
+	databricks bundle deploy --profile $(PROFILE)
+
+run:
+	databricks bundle run deepseek_r1_deployment_job  --profile $(PROFILE)
+
+destroy:
+	databricks bundle destroy --profile $(PROFILE)
+
+delete:
+	databricks serving-endpoints delete $(MODEL_NAME) --profile $(PROFILE)

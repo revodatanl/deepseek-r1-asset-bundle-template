@@ -1,0 +1,11 @@
+{
+    "properties": {
+    "hugginface_model_id": {
+        "order": 1,
+        "type": "string",
+        "description": "DeepSeek R1 Version",
+        "default": "deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
+        "enum": ["deepseek-ai/DeepSeek-R1-Distill-Llama-8B"]
+      }
+    }
+}
