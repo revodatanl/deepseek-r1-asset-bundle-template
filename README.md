@@ -8,10 +8,10 @@
     - [MLflow Integration](#mlflow-integration)
     - [Langchain Integration](#langchain-integration)
   - [Cleanup](#cleanup)
-  - [Wrap up](#wrap-up)
+  - [Deployment Made Easy](#deployment-made-easy)
 
 Databricks has demonstrated [DeepSeek R1 on Databricks](https://www.databricks.com/blog/deepseek-r1-databricks). We are excited to announce that we have taken it a step further by introducing the Databricks Asset Bundle (DAB) for deploying DeepSeek R1 in your Databricks environment. DAB offers a more robust and standardized approach for faster and consistent deployment of Databricks resources.
-The bundle supports the Llama 8B model and 70B variant. Currently the template is targeted at Azure, if you are interested in an version AWS please let us know.
+The bundle supports the DeepSeek-R1-Distill-Llama-8B variant. Currently the template is targeted at Azure, if you are interested in an version AWS please let us know.
 
 ## Workflow Overview
 
@@ -19,22 +19,22 @@ The Asset Bundle orchestrates a two-task deployment job:
 
 1. **Model Acquisition and Registration:**
    The first task retrieves the model from HuggingFace and registers it as an MLflow experiment. We use the transformer flavor, which streamlines LLM deployment by enabling setup of a text-generation pipeline as an OpenAI-compatible endpoint through simple `llm/v1/chat` task configuration.
-2. **Endpoint Deployment and Configuration:**
+1. **Endpoint Deployment and Configuration:**
     The second task manages the serving infrastructure by deploying the registered model as a serving endpoint. It can either create a
 new endpoint or update an existing one. The configuration includes cost-efficient auto-scaling, which scales to zero instances when
 idle, ensuring you only incur charges during active usage.
 
 ## Deployment Instructions
 
-Before starting, ensure you have installed and configured the [Databricks CLI](https://docs.databricks.com/en/dev-tools/cli/install.html) with your workspace credentials stored in a profile.
+Before starting, ensure you have installed and configured the [Databricks CLI](https://docs.databricks.com/en/dev-tools/cli/install.html) with your desired workspace credentials stored your Databricks profile.
 
 1. Initialize the asset bundle template:
 
 ```bash
-databricks bundle init [url] --profile <profile>
+databricks bundle init https://github.com/revodatanl/deepseek-r1-asset-bundle-template --profile <profile>
 ```
 
-2. Deploy and run the asset bundle to your workspace:
+1. Deploy and run the asset bundle to your workspace:
 
 ```bash
 make deploy_and_run --profile <profile>
@@ -68,7 +68,7 @@ payload = {
     "max_tokens": 2048,
 }
 response = client.predict(
-    endpoint="DeepSeek-R1-Distill-Llama-8B",  # Or replace with your exact serving endpoint url
+    endpoint="DeepSeek-R1-Distill-Llama-8B", # Or replace with your serving endpoint url
     inputs=payload,
 )
 ```
@@ -91,17 +91,19 @@ chat_model.invoke("Please explain why the grass is green.")
 ```
 
 ## Cleanup
+
 Although we utilize the scaling capabilities of Databricks to optimize costs, you can manually remove all resources after completing their use, treating them as cattle rather than pets.
 To clean up the deployed model and related resources, apply the following command:
 
 ```bash
-    make destroy_and_delete --profile [profile]
+make destroy_and_delete --profile <profile>
 ```
 
 This will initiate the removal of all resources that are provisioned and deployed by the bundle and then delete the endpoint that was created during the workflow.
 
-## Wrap Up
-This tutorial demonstrated how Databricks Asset Bundles (DAB) simplify the deployment of DeepSeek R1.
+## Deployment Made Easy
+
+This tutorial demonstrated how Databricks Asset Bundles simplify the deployment of DeepSeek R1 on your databricks workspace.
 Key takeaways include:
 
 - **Streamlined Operations**: Deploy complex machine learning models with just a few commands, leveraging auto-scaling capabilities to optimize costs by scaling resources up or down as needed.
@@ -109,6 +111,5 @@ Key takeaways include:
 - **Enterprise Features**: Benefit from automated MLflow versioning, monitoring, and OpenAI-compatible endpoints, ensuring a production-ready deployment that is both maintainable and scalable.
 By using DABs, you can achieve reproducible deployments and enterprise-grade serving capabilities.
 
-Have questions or feedback? We'd love to hear from you! 
-
-Please open an issue on our GitHub repository #todo add link to gh or reach out to our team at <info@revodata.nl>
+Have questions or feedback? We'd love to hear from you!
+Please open an issue on our GitHub repository or reach out to our team at <blog@revodata.nl>
